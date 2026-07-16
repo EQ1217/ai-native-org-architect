@@ -6,6 +6,15 @@
   "functions": {
     "api/diagnose.js": {
       "maxDuration": 30
+    },
+    "api/generate.js": {
+      "maxDuration": 30
+    },
+    "api/analyze-data.js": {
+      "maxDuration": 30
+    },
+    "api/chat.js": {
+      "maxDuration": 30
     }
   }
 }
