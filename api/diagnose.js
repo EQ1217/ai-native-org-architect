@@ -176,5 +176,5 @@ export default async function handler(req, res) {
 // Vercel 默认 10s 超时，主流程 requestLlmEnhancedReport 前端也设了 30s，
 // 这里配置 30s 给模型多留一点时间。
 export const config = {
-  maxDuration: 30,
+  maxDuration: 60,
 };

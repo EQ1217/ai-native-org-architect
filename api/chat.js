@@ -181,5 +181,5 @@ export default async function handler(req, res) {
 }
 
 export const config = {
-  maxDuration: 30,
+  maxDuration: 60,
 };
