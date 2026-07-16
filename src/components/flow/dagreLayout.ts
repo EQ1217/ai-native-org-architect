@@ -4,10 +4,10 @@ import type { FlowGraph, FlowNode } from '../../types/diagnostic';
 
 function getNodeSize(node: FlowNode): { width: number; height: number } {
   if (node.kind === 'ai') {
-    return { width: 280, height: 228 };
+    return { width: 300, height: 320 };
   }
 
-  return { width: 320, height: 248 };
+  return { width: 340, height: 340 };
 }
 
 export function layoutFlowGraph(
@@ -17,7 +17,16 @@ export function layoutFlowGraph(
 ): { nodes: Node[]; edges: Edge[] } {
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));
-  g.setGraph({ rankdir: 'LR', nodesep: 42, ranksep: 90, marginx: 24, marginy: 24 });
+  g.setGraph({
+    rankdir: 'LR',
+    nodesep: 100,
+    ranksep: 180,
+    edgesep: 30,
+    marginx: 60,
+    marginy: 60,
+    ranker: 'network-simplex',
+    acyclicer: 'greedy',
+  });
 
   graph.nodes.forEach((node) => {
     const size = getNodeSize(node);
@@ -44,6 +53,7 @@ export function layoutFlowGraph(
     id: edge.id,
     source: edge.source,
     target: edge.target,
+    type: 'smoothstep',
   }));
 
   return { nodes, edges };

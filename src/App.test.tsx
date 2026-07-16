@@ -82,6 +82,6 @@ describe('App', () => {
       { timeout: 3000 },
     );
     expect(screen.getByRole('heading', { name: '当前状态评估' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: '从现在的工作方式，到 AI 参与后的新工作方式' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '从现在的工作方式，到 AI 设计后的新工作方式' })).toBeInTheDocument();
   });
 });

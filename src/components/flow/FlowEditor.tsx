@@ -205,6 +205,16 @@ export function FlowEditor({
   }, [removeNode, handleInsertNode]);
 
   useEffect(() => {
+    const currentGraph = toFlowGraph(nodes, edges);
+    const externalSignature = JSON.stringify(graph);
+    const currentSignature = JSON.stringify(currentGraph);
+    if (externalSignature !== currentSignature) {
+      relayoutGraph(graph, coreNodeId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [graph]);
+
+  useEffect(() => {
     const nextGraph = toFlowGraph(nodes, edges);
     const signature = JSON.stringify(nextGraph);
     if (signature === lastGraphSignatureRef.current) {

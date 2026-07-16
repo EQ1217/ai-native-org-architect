@@ -41,6 +41,17 @@ export interface DataUploadType {
   fields: string[];
 }
 
+export interface UploadedDataSummary {
+  fileName: string;
+  dataType: string;
+  rowCount: number;
+  columnCount: number;
+  columns: string[];
+  sampleRows: Array<Record<string, string>>;
+  numericColumns: Array<{ name: string; min?: number; max?: number; avg?: number }>;
+  textPreview: string;
+}
+
 export interface StageHint {
   stage: string;
   replaceAction: string;
@@ -62,12 +73,17 @@ export interface IndustryProfile {
   cases: IndustryCase[];
 }
 
+export type NodeChangeType = 'added' | 'modified' | 'merged' | 'same';
+
 export interface FlowNode {
   id: string;
   label: string;
   input?: string;
   output?: string;
   kind?: 'stage' | 'ai';
+  changeType?: NodeChangeType;
+  mergedFrom?: string[];
+  changeNote?: string;
 }
 
 export interface FlowEdge {
@@ -88,6 +104,7 @@ export interface QuestionnaireAnswer {
   coreNodeId: string;
   flowGraph: FlowGraph;
   currentAiUsage: string[];
+  uploadedData?: UploadedDataSummary;
 }
 
 export interface MechanismRecommendation {
@@ -123,6 +140,7 @@ export interface ReadinessScore {
   score: number;
   summary: string;
   evidence: ReadinessEvidence;
+  isAiEnhanced?: boolean;
 }
 
 export interface NodeAnnotation {
@@ -140,6 +158,8 @@ export interface NodeAnnotation {
   ownership?: 'human' | 'hybrid' | 'ai';
   isAiNode?: boolean;
   isCore: boolean;
+  isAiEnhanced?: boolean;
+  enhancedFields?: string[];
 }
 
 export interface InitialInsight {
@@ -155,6 +175,10 @@ export interface DiagnosticReport {
   recommendedCases: IndustryCase[];
   optimizedGraph: FlowGraph;
   optimizedAnnotations: NodeAnnotation[];
+  reportHeadline?: string;
+  reportNarrative?: string;
+  modelNotes?: string[];
+  isAiEnhanced?: boolean;
 }
 
 export interface LlmReadinessEnhancement {

@@ -1,6 +1,6 @@
 import { Handle, Position, useReactFlow, type NodeProps } from '@xyflow/react';
 import { MECHANISM_LABELS } from '../../utils/mechanismLabels';
-import type { NodeAnnotation } from '../../types/diagnostic';
+import type { NodeAnnotation, NodeChangeType } from '../../types/diagnostic';
 
 export interface StageNodeData {
   label: string;
@@ -10,8 +10,17 @@ export interface StageNodeData {
   isCore?: boolean;
   editable?: boolean;
   isAi?: boolean;
+  changeType?: NodeChangeType;
+  changeNote?: string;
   onRemove?: (nodeId: string) => void;
 }
+
+const CHANGE_TYPE_META: Record<NodeChangeType, { label: string; className: string }> = {
+  added: { label: '新增', className: 'change-type-added' },
+  modified: { label: '改造', className: 'change-type-modified' },
+  merged: { label: '合并', className: 'change-type-merged' },
+  same: { label: '保留', className: 'change-type-same' },
+};
 
 export function StageNode({ id, data, selected }: NodeProps) {
   const nodeData = data as unknown as StageNodeData;
@@ -22,9 +31,11 @@ export function StageNode({ id, data, selected }: NodeProps) {
     );
   };
 
+  const changeMeta = nodeData.changeType ? CHANGE_TYPE_META[nodeData.changeType] : null;
+
   return (
     <div
-      className={`stage-node${nodeData.isCore ? ' stage-node-core' : ''}${selected ? ' stage-node-selected' : ''}${nodeData.isAi ? ' stage-node-ai' : ''}`}
+      className={`stage-node${nodeData.isCore ? ' stage-node-core' : ''}${selected ? ' stage-node-selected' : ''}${nodeData.isAi ? ' stage-node-ai' : ''}${changeMeta ? ` stage-node-${changeMeta.className}` : ''}`}
     >
       <Handle type="target" position={Position.Left} className="stage-handle" />
 
@@ -76,6 +87,11 @@ export function StageNode({ id, data, selected }: NodeProps) {
         <>
           <div className="stage-node-header">
             <div className="stage-node-label">{nodeData.label}</div>
+            {changeMeta ? (
+              <span className={`change-type-tag ${changeMeta.className}`}>
+                {changeMeta.label}
+              </span>
+            ) : null}
           </div>
           {nodeData.input || nodeData.output ? (
             <div className="stage-node-io-readonly">
@@ -98,15 +114,23 @@ export function StageNode({ id, data, selected }: NodeProps) {
 
       {nodeData.annotation ? (
         <div className="stage-node-annotation">
-          {nodeData.annotation.mechanism.length > 0 ? (
-            <div className="stage-node-mechanism">
-              {nodeData.annotation.mechanism.map((item) => (
-                <span key={item} className="stage-mech-tag">
-                  {MECHANISM_LABELS[item] ?? item}
-                </span>
-              ))}
-            </div>
-          ) : null}
+          <div className="stage-node-annotation-header">
+            {nodeData.annotation.mechanism.length > 0 ? (
+              <div className="stage-node-mechanism">
+                {nodeData.annotation.mechanism.map((item) => (
+                  <span key={item} className="stage-mech-tag">
+                    {MECHANISM_LABELS[item] ?? item}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            {nodeData.annotation.isAiEnhanced ? (
+              <span className="ai-enhanced-badge">
+                <span className="ai-badge-dot" />
+                AI 增强
+              </span>
+            ) : null}
+          </div>
           {nodeData.annotation.ownership ? (
             <p className="stage-node-ownership">
               {nodeData.annotation.ownership === 'ai'

@@ -44,6 +44,42 @@ function buildDefaultFlowGraph(workflow: string[]): FlowGraph {
   };
 }
 
+const DEMO_INDUSTRY = 'internet_saas' as IndustryKey;
+const DEMO_TEAM_TYPE = '产品研发团队';
+const DEMO_TEAM_SIZE = '20-50' as TeamSize;
+const DEMO_AI_USAGE = [
+  '代码补全 / Copilot',
+  '文档写作 / 摘要',
+  '测试用例生成',
+];
+
+const DEMO_WORKFLOW = [
+  { label: '需求评审', input: '业务需求文档 + 用户反馈', output: '结构化需求规格 + 优先级排序' },
+  { label: '编码实现', input: '评审通过的需求规格', output: '可运行代码 + 技术方案文档' },
+  { label: '代码评审', input: '待评审代码 + 实现说明', output: '评审通过代码 + 改进建议' },
+  { label: '测试验证', input: '待测试版本 + 测试用例', output: '测试报告 + 缺陷清单' },
+  { label: '上线发布', input: '验收通过的版本', output: '上线版本 + 发布说明' },
+  { label: '运维监控', input: '线上运行数据', output: '运维报表 + 告警记录' },
+];
+
+const DEMO_CORE_INDEX = 1;
+
+function buildDemoFlowGraph(): FlowGraph {
+  const nodes = DEMO_WORKFLOW.map((item, index) => ({
+    id: `stage-${index}`,
+    label: item.label,
+    input: item.input,
+    output: item.output,
+    kind: 'stage' as const,
+  }));
+  const edges = DEMO_WORKFLOW.slice(1).map((_, index) => ({
+    id: `edge-${index}`,
+    source: `stage-${index}`,
+    target: `stage-${index + 1}`,
+  }));
+  return { nodes, edges };
+}
+
 export function QuestionStepCard({
   answers,
   updateAnswers,
@@ -61,6 +97,19 @@ export function QuestionStepCard({
     (nodeId: string) => updateAnswers({ coreNodeId: nodeId }),
     [updateAnswers],
   );
+
+  const handleAutoFill = useCallback(() => {
+    const demoGraph = buildDemoFlowGraph();
+    const coreId = `stage-${DEMO_CORE_INDEX}`;
+    updateAnswers({
+      industry: answers.industry || DEMO_INDUSTRY,
+      teamType: answers.teamType || DEMO_TEAM_TYPE,
+      teamSize: answers.teamSize || DEMO_TEAM_SIZE,
+      currentAiUsage: answers.currentAiUsage.length > 0 ? answers.currentAiUsage : [...DEMO_AI_USAGE],
+      flowGraph: demoGraph,
+      coreNodeId: coreId,
+    });
+  }, [answers, updateAnswers]);
 
   const canProceed = () => {
     if (step === 0) return Boolean(answers.industry && answers.teamType && answers.teamSize);
@@ -169,9 +218,18 @@ export function QuestionStepCard({
 
         {step === 1 ? (
           <div className="question-step-body">
-            <p className="question-field-hint">
-              节点卡片里可以直接填输入 / 输出；点击节点会设为核心环节。
-            </p>
+            <div className="flow-editor-toolbar">
+              <p className="question-field-hint">
+                节点卡片里可以直接填输入 / 输出；点击节点会设为核心环节。
+              </p>
+              <button
+                type="button"
+                className="auto-fill-button"
+                onClick={handleAutoFill}
+              >
+                ✨ AI 辅助生成业务流图
+              </button>
+            </div>
             <FlowEditor
               graph={answers.flowGraph}
               coreNodeId={answers.coreNodeId}

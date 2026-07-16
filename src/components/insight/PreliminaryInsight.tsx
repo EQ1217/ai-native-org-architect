@@ -5,14 +5,14 @@ import { FlowDiagram } from '../flow/FlowDiagram';
 import { DataUpload } from './DataUpload';
 import { MaskedCaseList } from './MaskedCaseList';
 import { MECHANISM_LABELS } from '../../utils/mechanismLabels';
-import type { IndustryCase, InitialInsight, NodeAnnotation, QuestionnaireAnswer } from '../../types/diagnostic';
+import type { IndustryCase, InitialInsight, NodeAnnotation, QuestionnaireAnswer, UploadedDataSummary } from '../../types/diagnostic';
 
 interface PreliminaryInsightProps {
   answers: QuestionnaireAnswer;
   insight: InitialInsight;
   annotations: NodeAnnotation[];
   cases: IndustryCase[];
-  onUploaded: () => void;
+  onUploaded: (summary: UploadedDataSummary) => void;
   onBack: () => void;
 }
 
