@@ -78,6 +78,8 @@ function buildChatPrompt(payload) {
     `    {`,
     `      "nodeId": "对应 optimizedGraph 里的节点 id",`,
     `      "label": "节点名称",`,
+    `      "input": "该节点输入",`,
+    `      "output": "该节点输出",`,
     `      "mechanism": ["skill", "workflow"],`,
     `      "rationale": "为什么这样设计",`,
     `      "action": "该节点实际做什么",`,

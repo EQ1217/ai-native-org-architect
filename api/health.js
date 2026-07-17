@@ -15,6 +15,11 @@ export default function handler(req, res) {
     return;
   }
 
+  if (req.method !== 'GET') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
   res.status(200).json({
     ok: true,
     configured: Boolean(API_KEY),

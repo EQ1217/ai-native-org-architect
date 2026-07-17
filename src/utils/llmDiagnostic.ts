@@ -202,8 +202,9 @@ export async function requestLlmEnhancedReport(
     return null;
   }
 
+  // 与后端 api/diagnose.js 的 maxDuration(60s) 对齐，避免前端先于后端 abort
   const controller = new AbortController();
-  const timeoutId = window.setTimeout(() => controller.abort(), 30000);
+  const timeoutId = window.setTimeout(() => controller.abort(), 60000);
 
   try {
     const response = await fetch('/api/diagnose', {

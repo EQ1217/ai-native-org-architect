@@ -33,8 +33,10 @@ function extractJsonBlock(raw) {
 
 function buildGeneratePrompt(payload) {
   const answers = payload.answers || {};
-  const flowGraph = payload.beforeGraph || { nodes: [], edges: [] };
-  const fallbackReadiness = payload.fallbackReadiness || [];
+  // Before 图：前端放在 answers.flowGraph（与 server/llm-proxy.js 一致），兼容旧字段 beforeGraph
+  const flowGraph = answers.flowGraph || payload.beforeGraph || { nodes: [], edges: [] };
+  // 初步就绪度：前端放在 fallbackReport.readiness，兼容旧字段 fallbackReadiness
+  const fallbackReadiness = payload.fallbackReport?.readiness || payload.fallbackReadiness || [];
   const uploadedData = answers.uploadedData;
 
   const dataContext = [];
@@ -178,11 +180,11 @@ async function requestGenerate(payload) {
     },
     body: JSON.stringify({
       model: MODEL,
-      temperature: 0.3,
+      temperature: 0.4,
       messages: [
         {
           role: 'system',
-          content: '你是严谨的组织 AI 改造顾问。输出必须是合法 JSON，且严格匹配用户给定 schema。',
+          content: '你是资深的组织 AI 改造顾问。输出必须是合法 JSON，且严格匹配用户给定 schema。要从结构层面重新设计工作流，不要简单复制原有节点。',
         },
         { role: 'user', content: buildGeneratePrompt(payload) },
       ],
