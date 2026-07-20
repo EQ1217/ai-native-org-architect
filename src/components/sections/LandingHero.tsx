@@ -37,11 +37,8 @@ export function LandingHero({ onStart }: LandingHeroProps) {
   return (
     <section className="hero-landing">
       <div className="hero-landing-bg" aria-hidden="true">
-        <span className="hero-orb hero-orb-1" />
-        <span className="hero-orb hero-orb-2" />
-        <span className="hero-orb hero-orb-3" />
+        <span className="hero-landing-glow" />
       </div>
-
       <div className="hero-landing-content">
         <p className="section-eyebrow">AI 原生组织架构师</p>
         <h1 className="hero-title" aria-label="让 AI 走进业务流。">

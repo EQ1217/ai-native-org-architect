@@ -1,4 +1,3 @@
-import { SectionHeader } from '../layout/SectionHeader';
 import type { TeamSize } from '../../types/diagnostic';
 
 interface InsightMetricsProps {
@@ -45,19 +44,16 @@ export function InsightMetrics({
   ];
 
   return (
-    <section className="dashboard-section insight-card">
-      <SectionHeader
-        title="关键指标"
-        description="一眼看清本轮诊断的关键数字。"
-        eyebrow="Insights"
-      />
-
+    <section className="insight-metrics-section">
       <div className="insight-metrics-grid">
-        {metrics.map((metric) => (
+        {metrics.map((metric, index) => (
           <article key={metric.label} className="insight-metric-item">
-            <p>{metric.label}</p>
-            <strong>{metric.value}</strong>
-            <span>{metric.detail}</span>
+            <div className="insight-metric-index">{String(index + 1).padStart(2, '0')}</div>
+            <div className="insight-metric-content">
+              <div className="insight-metric-label">{metric.label}</div>
+              <div className="insight-metric-value">{metric.value}</div>
+              <div className="insight-metric-detail">{metric.detail}</div>
+            </div>
           </article>
         ))}
       </div>

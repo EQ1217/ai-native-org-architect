@@ -11,6 +11,7 @@ import type {
   TeamSize,
 } from '../../types/diagnostic';
 import { FlowEditor } from '../flow/FlowEditor';
+import { Icon } from '../icons';
 import { ProgressRail } from './ProgressRail';
 
 interface QuestionStepCardProps {
@@ -227,7 +228,7 @@ export function QuestionStepCard({
                 className="auto-fill-button"
                 onClick={handleAutoFill}
               >
-                ✨ AI 辅助生成业务流图
+                <Icon name="sparkles" size={15} /> AI 辅助生成业务流图
               </button>
             </div>
             <FlowEditor
@@ -254,7 +255,7 @@ export function QuestionStepCard({
                     onClick={() => toggleAiUsage(item)}
                   >
                     <span className="check-mark" aria-hidden="true">
-                      {checked ? '✓' : ''}
+                      {checked ? <Icon name="check" size={14} /> : null}
                     </span>
                     <span>{item}</span>
                   </button>

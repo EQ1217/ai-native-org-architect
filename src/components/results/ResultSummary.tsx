@@ -34,7 +34,7 @@ export function ResultSummary({
       <SectionHeader
         title="当前状态评估"
         description={`基于 ${teamType} 的业务流、AI 使用习惯与组织准备度。`}
-        eyebrow="Assessment"
+        eyebrow="现状评估"
       />
 
       <div className="result-summary-grid">

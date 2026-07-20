@@ -24,7 +24,7 @@ export function CaseLibrary({ cases }: CaseLibraryProps) {
       <SectionHeader
         title="案例库"
         description="同行业已验证的 AI 提效案例，机制和结果都可参考。"
-        eyebrow="Cases"
+        eyebrow="案例对标"
       />
 
       {cases.length === 0 ? (

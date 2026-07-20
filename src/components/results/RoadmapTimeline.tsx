@@ -67,7 +67,7 @@ export function RoadmapTimeline({ annotations, readiness }: RoadmapTimelineProps
       <SectionHeader
         title="30 / 60 / 90 天改造路线图"
         description="沿着诊断出的核心与相邻节点，按试点、协同、扩面三步推进。"
-        eyebrow="Roadmap"
+        eyebrow="改造路线"
       />
 
       <div className="roadmap-grid">

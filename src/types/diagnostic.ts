@@ -48,6 +48,7 @@ export interface UploadedDataSummary {
   columnCount: number;
   columns: string[];
   sampleRows: Array<Record<string, string>>;
+  allRows: Array<Record<string, string>>;
   numericColumns: Array<{ name: string; min?: number; max?: number; avg?: number }>;
   textPreview: string;
 }

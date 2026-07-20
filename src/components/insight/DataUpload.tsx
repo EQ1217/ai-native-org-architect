@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { Icon } from '../icons';
 import { getIndustryProfile } from '../../data/industryProfiles';
 import type { DataUploadType, IndustryKey, UploadedDataSummary } from '../../types/diagnostic';
 
@@ -105,6 +106,7 @@ function buildSummary(
     columnCount: headers.length,
     columns: headers,
     sampleRows,
+    allRows: rows,
     numericColumns,
     textPreview,
   };
@@ -131,6 +133,9 @@ function buildMockDataSummary(): UploadedDataSummary {
     { '需求ID': 'REQ-006', '需求名称': '消息推送系统', '负责人': '周八', '优先级': 'P2', '工时预估(人天)': '6', '实际工时(人天)': '8', '代码行数': '2100', 'Bug数量': '5', '状态': '已上线' },
     { '需求ID': 'REQ-007', '需求名称': '订单管理后台', '负责人': '吴九', '优先级': 'P1', '工时预估(人天)': '12', '实际工时(人天)': '18', '代码行数': '6500', 'Bug数量': '10', '状态': '测试中' },
     { '需求ID': 'REQ-008', '需求名称': '客服工单系统', '负责人': '郑十', '优先级': 'P3', '工时预估(人天)': '8', '实际工时(人天)': '10', '代码行数': '2800', 'Bug数量': '4', '状态': '已上线' },
+    { '需求ID': 'REQ-009', '需求名称': '首页改版', '负责人': '张三', '优先级': 'P1', '工时预估(人天)': '25', '实际工时(人天)': '28', '代码行数': '9000', 'Bug数量': '18', '状态': '已上线' },
+    { '需求ID': 'REQ-010', '需求名称': '搜索功能优化', '负责人': '李四', '优先级': 'P2', '工时预估(人天)': '7', '实际工时(人天)': '9', '代码行数': '2500', 'Bug数量': '7', '状态': '已上线' },
+    { '需求ID': 'REQ-011', '需求名称': 'A/B测试平台', '负责人': '王五', '优先级': 'P1', '工时预估(人天)': '18', '实际工时(人天)': '22', '代码行数': '10000', 'Bug数量': '14', '状态': '测试中' },
   ];
   return buildSummary('研发需求数据(模拟).csv', '研发流程数据', headers, rows);
 }
@@ -152,6 +157,7 @@ function parseTextFile(file: File, dataType: string): Promise<UploadedDataSummar
             columnCount: 0,
             columns: [],
             sampleRows: [],
+            allRows: [],
             numericColumns: [],
             textPreview: text.slice(0, 300),
           });
@@ -288,7 +294,7 @@ export function DataUpload({ industry, onUploaded }: DataUploadProps) {
             className="mock-data-button"
             onClick={handleUseMockData}
           >
-            🎯 使用模拟数据查看深度报告样例
+            <Icon name="target" size={16} /> 使用模拟数据查看深度报告样例
           </button>
           <p className="mock-data-hint">内置产品研发团队示例数据，一键查看完整诊断效果</p>
         </div>

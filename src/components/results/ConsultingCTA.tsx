@@ -18,7 +18,7 @@ export function ConsultingCTA({
       <SectionHeader
         title="下一步行动"
         description="诊断已缩小问题范围，下一步补充组织上下文或进入专家咨询。"
-        eyebrow="Next Step"
+        eyebrow="下一步"
       />
 
       <div className="consulting-cta-layout">

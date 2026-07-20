@@ -11,7 +11,7 @@ export function ReadinessRadar({ readiness }: ReadinessRadarProps) {
       <SectionHeader
         title="深度洞察预览：你会得到什么"
         description="下面是脱敏样例预览，用来展示下一层会解锁哪些组织洞察、问题拆解与分析报表。"
-        eyebrow="Deep Insight Preview"
+        eyebrow="就绪度预览"
       />
 
       <div className="readiness-preview-callout">

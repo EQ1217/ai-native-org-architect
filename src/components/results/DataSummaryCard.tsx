@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { Icon } from '../icons';
 import type { QuestionnaireAnswer, UploadedDataSummary } from '../../types/diagnostic';
 import {
   requestLlmDataAnalysis,
@@ -10,15 +11,24 @@ interface DataSummaryCardProps {
   answers: QuestionnaireAnswer;
 }
 
+const CHART_COLORS = [
+  'oklch(0.40 0.12 55)',
+  'oklch(0.48 0.10 55)',
+  'oklch(0.56 0.09 55)',
+  'oklch(0.64 0.07 55)',
+  'oklch(0.72 0.05 55)',
+  'oklch(0.78 0.04 55)',
+];
+
 function classifyColumns(data: UploadedDataSummary) {
   const numericSet = new Set(data.numericColumns.map((c) => c.name));
   const categorical: Array<{ name: string; values: Array<{ value: string; count: number }> }> = [];
 
-  if (data.sampleRows.length > 0 && data.columns.length > 0) {
+  if (data.allRows.length > 0 && data.columns.length > 0) {
     data.columns.forEach((col) => {
       if (numericSet.has(col)) return;
       const counts: Record<string, number> = {};
-      data.sampleRows.forEach((row) => {
+      data.allRows.forEach((row) => {
         const val = row[col]?.toString().trim() || '(空)';
         counts[val] = (counts[val] || 0) + 1;
       });
@@ -33,6 +43,17 @@ function classifyColumns(data: UploadedDataSummary) {
       }
     });
   }
+
+  // 优先选更有业务含义的列（优先级/状态），不要选负责人这类
+  categorical.sort((a, b) => {
+    const priorityCols = ['优先级', '状态'];
+    const aPriority = priorityCols.indexOf(a.name);
+    const bPriority = priorityCols.indexOf(b.name);
+    if (aPriority !== -1 && bPriority !== -1) return aPriority - bPriority;
+    if (aPriority !== -1) return -1;
+    if (bPriority !== -1) return 1;
+    return 0;
+  });
 
   return { numeric: data.numericColumns, categorical };
 }
@@ -122,13 +143,7 @@ export function DataSummaryCard({ data, answers }: DataSummaryCardProps) {
       <div className="data-summary-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div className="data-summary-icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
-              <polyline points="10 9 9 9 8 9" />
-            </svg>
+            <Icon name="flow" size={18} />
           </div>
           <div>
             <p className="section-eyebrow">业务数据分析</p>
@@ -144,9 +159,9 @@ export function DataSummaryCard({ data, answers }: DataSummaryCardProps) {
           {loading ? (
             <><span className="ai-analyze-spinner" /> AI 解读中…</>
           ) : analysis ? (
-            <>🔄 重新解读</>
+            <><Icon name="refresh" size={14} /> 重新解读</>
           ) : (
-            <>🤖 AI 数据解读</>
+            <><Icon name="bot" size={14} /> AI 数据解读</>
           )}
         </button>
       </div>
@@ -179,8 +194,7 @@ export function DataSummaryCard({ data, answers }: DataSummaryCardProps) {
             <div className="bar-chart">
               {numeric.slice(0, 6).map((col, index) => {
                 const width = ((col.avg ?? 0) / maxNumericAvg) * 100;
-                const colors = ['#8b6b46', '#6b8e6b', '#b8860b', '#8b6914', '#556b2f', '#8b4513'];
-                const color = colors[index % colors.length];
+                const color = CHART_COLORS[index % CHART_COLORS.length];
                 return (
                   <div key={col.name} className="bar-chart-row">
                     <span className="bar-chart-label">{col.name}</span>
@@ -206,10 +220,10 @@ export function DataSummaryCard({ data, answers }: DataSummaryCardProps) {
             </div>
             <div className="donut-legend">
               {topCategorical.values.slice(0, 6).map((item, index) => {
-                const colors = ['#8b6b46', '#6b8e6b', '#b8860b', '#8b6914', '#556b2f', '#8b4513'];
+                const color = CHART_COLORS[index % CHART_COLORS.length];
                 return (
                   <div key={item.value} className="donut-legend-item">
-                    <span className="donut-legend-dot" style={{ background: colors[index % colors.length] }} />
+                    <span className="donut-legend-dot" style={{ background: color }} />
                     <span className="donut-legend-label">{item.value}</span>
                     <span className="donut-legend-count">{item.count}</span>
                   </div>
@@ -223,7 +237,7 @@ export function DataSummaryCard({ data, answers }: DataSummaryCardProps) {
       {derivedInsights.length > 0 ? (
         <div className="data-insights-card">
           <p className="data-chart-title">
-            <span className="insight-icon">💡</span>
+            <span className="insight-icon"><Icon name="bulb" size={16} /></span>
             数据洞察指标
           </p>
           <div className="insights-grid">
@@ -249,20 +263,20 @@ export function DataSummaryCard({ data, answers }: DataSummaryCardProps) {
 
       {error && !loading ? (
         <div className="ai-analysis-error">
-          <p>⚠️ {error}</p>
+          <p><Icon name="warning" size={14} /> {error}</p>
         </div>
       ) : null}
 
       {analysis && !loading ? (
         <div className="ai-analysis-result">
           <div className="ai-analysis-summary">
-            <span className="ai-analysis-summary-icon">📊</span>
+            <span className="ai-analysis-summary-icon"><Icon name="chart" size={18} /></span>
             <p className="ai-analysis-summary-text">{analysis.summary}</p>
           </div>
 
           {analysis.efficiencyMetrics && analysis.efficiencyMetrics.length > 0 ? (
             <div className="ai-analysis-section">
-              <p className="ai-analysis-section-title">⚡ 核心效率指标</p>
+              <p className="ai-analysis-section-title"><Icon name="bolt" size={14} /> 核心效率指标</p>
               <div className="ai-metrics-grid">
                 {analysis.efficiencyMetrics.map((metric) => (
                   <div key={metric.name} className={`ai-metric-item ai-metric-${metric.status}`}>
@@ -277,7 +291,7 @@ export function DataSummaryCard({ data, answers }: DataSummaryCardProps) {
 
           {analysis.keyFindings && analysis.keyFindings.length > 0 ? (
             <div className="ai-analysis-section">
-              <p className="ai-analysis-section-title">🔍 关键发现</p>
+              <p className="ai-analysis-section-title"><Icon name="search" size={14} /> 关键发现</p>
               <div className="ai-findings-list">
                 {analysis.keyFindings.map((finding, index) => (
                   <div key={index} className={`ai-finding-item ai-finding-${finding.level}`}>
@@ -294,7 +308,7 @@ export function DataSummaryCard({ data, answers }: DataSummaryCardProps) {
 
           {analysis.bottlenecks && analysis.bottlenecks.length > 0 ? (
             <div className="ai-analysis-section">
-              <p className="ai-analysis-section-title">⚠️ 主要瓶颈</p>
+              <p className="ai-analysis-section-title"><Icon name="warning" size={14} /> 主要瓶颈</p>
               <ul className="ai-bullet-list">
                 {analysis.bottlenecks.map((item, index) => (
                   <li key={index}>{item}</li>
@@ -305,7 +319,7 @@ export function DataSummaryCard({ data, answers }: DataSummaryCardProps) {
 
           {analysis.recommendations && analysis.recommendations.length > 0 ? (
             <div className="ai-analysis-section">
-              <p className="ai-analysis-section-title">💡 改进建议</p>
+              <p className="ai-analysis-section-title"><Icon name="bulb" size={14} /> 改进建议</p>
               <ul className="ai-bullet-list">
                 {analysis.recommendations.map((item, index) => (
                   <li key={index}>{item}</li>
@@ -316,7 +330,7 @@ export function DataSummaryCard({ data, answers }: DataSummaryCardProps) {
 
           {analysis.aiOpportunities && analysis.aiOpportunities.length > 0 ? (
             <div className="ai-analysis-section ai-analysis-opp">
-              <p className="ai-analysis-section-title">🤖 AI 切入机会</p>
+              <p className="ai-analysis-section-title"><Icon name="bot" size={14} /> AI 切入机会</p>
               <ul className="ai-bullet-list ai-opp-list">
                 {analysis.aiOpportunities.map((item, index) => (
                   <li key={index}>{item}</li>
@@ -332,18 +346,18 @@ export function DataSummaryCard({ data, answers }: DataSummaryCardProps) {
 
 function DonutChart({ items }: { items: Array<{ value: string; count: number }> }) {
   const total = items.reduce((sum, item) => sum + item.count, 0) || 1;
-  const colors = ['#8b6b46', '#6b8e6b', '#b8860b', '#8b6914', '#556b2f', '#8b4513'];
-  const size = 120;
-  const strokeWidth = 18;
+  const size = 180;
+  const strokeWidth = 30;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
   let offset = 0;
-  const segments = items.slice(0, 6).map((item, index) => {
+  const segments = items.map((item, index) => {
     const fraction = item.count / total;
     const dashLength = fraction * circumference;
     const dashOffset = -offset;
     offset += dashLength;
+    const color = CHART_COLORS[index % CHART_COLORS.length];
     return (
       <circle
         key={item.value}
@@ -351,18 +365,23 @@ function DonutChart({ items }: { items: Array<{ value: string; count: number }> 
         cy={size / 2}
         r={radius}
         fill="none"
-        stroke={colors[index % colors.length]}
         strokeWidth={strokeWidth}
         strokeDasharray={`${dashLength} ${circumference - dashLength}`}
         strokeDashoffset={dashOffset}
+        stroke={color}
         transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        className="donut-segment"
+        style={{
+          animation: `donutPulse 3s ease-in-out infinite`,
+          animationDelay: `${index * 0.2}s`,
+        }}
       />
     );
   });
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="donut-chart">
-      <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(139,107,70,0.08)" strokeWidth={strokeWidth} />
+      <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="var(--surface-3)" strokeWidth={strokeWidth} />
       {segments}
     </svg>
   );

@@ -10,6 +10,7 @@ import { DataSummaryCard } from './components/results/DataSummaryCard';
 import { ResultSummary } from './components/results/ResultSummary';
 import { RoadmapTimeline } from './components/results/RoadmapTimeline';
 import { LandingHero } from './components/sections/LandingHero';
+import { Icon } from './components/icons';
 import { getIndustryProfile } from './data/industryProfiles';
 import { useDiagnosticState } from './store/useDiagnosticState';
 import { buildDiagnosticReport, buildInitialInsight } from './utils/diagnosticEngine';
@@ -53,12 +54,14 @@ export default function App() {
   }, [baseReport]);
 
   useEffect(() => {
+    if (view === 'insight' || view === 'report') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     if (view !== 'report') {
       setAnalysisMode('idle');
       return;
     }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     let cancelled = false;
     setReport(baseReport);
@@ -111,7 +114,7 @@ export default function App() {
   if (view === 'insight') {
     return (
       <AppShell
-        eyebrow="Initial Insight"
+        eyebrow="初步洞察"
         title="初步洞察"
         description={`基于你的 ${profile?.label ?? '行业'} / ${answers.teamType} 答诊，先给你一个轻量判断。补齐关键业务明细后可生成完整改造方案。`}
       >
@@ -137,7 +140,7 @@ export default function App() {
     return (
       <>
       <AppShell
-        eyebrow="Deep Diagnosis"
+        eyebrow="深度诊断"
         title="深度组织改造方案"
         description={`基于你补充的业务明细与 ${profile?.label ?? '行业'} 诊断，以下是每个环节的精细化机制方案、替代动作与案例对标。`}
         actions={(
@@ -180,7 +183,7 @@ export default function App() {
                     </>
                   ) : analysisMode === 'generated' ? (
                     <>
-                      <span className="enhanced-check">✓</span>
+                      <span className="enhanced-check"><Icon name="check" size={12} /></span>
                       当前为 AI 设计的完整改造方案。
                     </>
                   ) : (

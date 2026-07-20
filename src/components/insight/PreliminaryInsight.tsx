@@ -46,9 +46,9 @@ export function PreliminaryInsight({
         caseCount={cases.length}
       />
 
-      <section className="dashboard-section insight-assessment-card">
-        <p className="section-eyebrow">阶段判断</p>
-        <h2 className="insight-assessment-title">{insight.stageAssessment}</h2>
+      <section className="insight-assessment-section">
+        <div className="insight-assessment-label">阶段判断</div>
+        <h1 className="insight-assessment-title">{insight.stageAssessment}</h1>
         <p className="insight-assessment-summary">{insight.summary}</p>
       </section>
 

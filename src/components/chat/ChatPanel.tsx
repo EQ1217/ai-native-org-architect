@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
+import { Icon } from '../icons';
 import { requestLlmChat } from '../../utils/llmDiagnostic';
 import type {
   FlowGraph,
@@ -131,7 +132,7 @@ export function ChatPanel({
         className={`chat-fab ${open ? 'chat-fab-open' : ''}`}
         onClick={() => setOpen((v) => !v)}
       >
-        {open ? '✕' : '💬'}
+        <Icon name={open ? 'close' : 'chat'} size={22} />
       </button>
 
       {open ? (
@@ -157,7 +158,7 @@ export function ChatPanel({
           <div className="chat-messages">
             {messages.length === 0 ? (
               <div className="chat-empty">
-                <div className="chat-empty-icon">🤖</div>
+                <div className="chat-empty-icon"><Icon name="bot" size={22} /></div>
                 <p className="chat-empty-title">想调整方案？直接告诉我</p>
                 <p className="chat-empty-desc">
                   比如"把流程简化一点"、"增加质量把关环节"、"让 AI 做更多事"
@@ -197,7 +198,7 @@ export function ChatPanel({
             <div ref={messagesEndRef} />
           </div>
 
-          {error ? <div className="chat-error">⚠️ {error}</div> : null}
+          {error ? <div className="chat-error"><Icon name="warning" size={14} /> {error}</div> : null}
 
           <div className="chat-input-area">
             <textarea
